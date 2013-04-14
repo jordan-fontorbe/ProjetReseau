@@ -1,0 +1,3 @@
+ifconfig eth0 66.66.66.66/24
+route add default gw 66.66.66.1
+apache2ctl start

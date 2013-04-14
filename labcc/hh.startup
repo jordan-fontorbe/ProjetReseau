@@ -1,0 +1,4 @@
+ifconfig eth0 80.80.80.2/24
+ifconfig eth1 66.66.66.1/24
+ifconfig eth2 54.54.54.1/24
+route add -net 110.0.0.0/8 gw 80.80.80.1
