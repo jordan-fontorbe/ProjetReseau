@@ -1,7 +1,25 @@
+# Authors : Arthur GUILLAUME, Jordan FONTORBE
+
+# Router static configuration
 ifconfig eth0 110.186.156.14
 ifconfig eth1 10.176.63.1
 route add default gw 110.0.0.1
+
+# Start DHCP server
 /etc/init.d/dhcp3-server start
+
+# NAT routing
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 110.186.156.14
 iptables -t nat -A PREROUTING -p tcp -i eth0 -d 110.186.156.14 --dport 22 -j DNAT --to 10.176.63.2:22
+
+# Clean up netfilters
+iptables --flush
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+
+# Drop packets coming from anywhere else than term
+# --syn option filters packets with flag 'SYN' enabled to allow outgoing packets
+# ! before source address rejects everything except this one
+iptables -A FORWARD -p tcp --syn -s ! 54.54.54.54 --dport ssh -j DROP
