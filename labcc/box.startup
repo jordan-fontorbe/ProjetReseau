@@ -20,6 +20,10 @@ iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 
 # Drop packets coming from anywhere else than term
+# This rule is used only for forwarded packets.
 # --syn option filters packets with flag 'SYN' enabled to allow outgoing packets
 # ! before source address rejects everything except this one
 iptables -A FORWARD -p tcp --syn -s ! 54.54.54.54 --dport ssh -j DROP
+
+# Drop incomming packets, this rule is used only for packets that are NOT forwarded.
+iptables -P INPUT DROP
