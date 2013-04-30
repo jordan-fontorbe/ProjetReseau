@@ -111,5 +111,15 @@ La valeur 3600 a été choisit arbitrairement. Elle est exprimée en secondes. U
 Les trois lignes suivantes servent à attribuer dynamiquement une adresse IP comprise entre 10.176.63.3 et 10.176.63.30 sur le réseau privé 110.176.63.0/27 aux clients souhaitant rejoindre le réseau.
 L'adresse 10.176.63.0 est celle du réseau et ne peut donc pas être attribuée à une machine. Tout comme 10.176.63.31 qui est l'adresse de broadcast de ce sous-réseau.\\
 Enfin, l'adresse 10.176.63.2 est réservé pour une machine particulière du sous-réseau. Ceci sera détaillé dans le point 4 de ce chapitre (l'adresse 10.176.63.1 est utilisée par le routeur \emph{box}).
-La dernière ligne sert à indiquer la passerelle par défaut aux machines se configurant via le serveur DHCP. 
+La dernière ligne sert à indiquer la passerelle par défaut aux machines se configurant via le serveur DHCP.
+
+Voici un exemple des trames lors de le configuration par DHCP de \emph{pc2} :
+
+\begin{figure}[h!]
+
+	\includegraphics[width=1\textwidth]{TrameDHCP.png}
+	\centering
+	\caption{Trames de configuration par DHCP pour pc2}
+
+\end{figure}
 \end{document} 

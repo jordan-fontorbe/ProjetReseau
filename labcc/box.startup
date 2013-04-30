@@ -27,3 +27,6 @@ iptables -A FORWARD -p tcp --syn -s ! 54.54.54.54 --dport ssh -j DROP
 
 # Drop incomming packets, this rule is used only for packets that are NOT forwarded.
 iptables -P INPUT DROP
+
+# Allow incomming packets on box, only if they come from local network. ie: on interface eth1.
+iptables -A INPUT -i eth1 -j ACCEPT
