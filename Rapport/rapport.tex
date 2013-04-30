@@ -97,6 +97,7 @@ L'interface \textbf{eth1} est dans le sous-réseau \emph{hub} alors que \textbf{
 La troisième ligne indique au routeur la passerelle par défaut qui permettra de communiquer avec les machines qui ne sont les sous-réseaux auxquels il appartient.
 \section{Configuration du serveur DHCP}
 Cette deuxième partie, a pour but de configurer un serveur DHCP sur le routeur \emph{box} afin d'attribuer des adresses IP de façon dynamique aux machines du réseau.
+\label{lbl1}
 \begin{verbatim}
 default-lease-time 3600;
 max-lease-time 86400;
@@ -119,7 +120,69 @@ Voici un exemple des trames lors de le configuration par DHCP de \emph{pc2} :
 
 	\includegraphics[width=1\textwidth]{TrameDHCP.png}
 	\centering
-	\caption{Trames de configuration par DHCP pour pc2}
+	\caption{Trames de configuration par DHCP pour pc2.}
 
 \end{figure}
+
+\section[NAT dynamique]{Configuration de \emph{box} pour NAT dynamique}
+Dans cette troisième partie, nous devions configurer le routeur \emph{box} pour faire du routage NAT dynamique. Cette configuration a permis aux machines du sous-réseau 110.176.63.0/27 de communiquer avec l'extérieur.
+\\
+\begin{verbatim}
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 110.186.156.14
+\end{verbatim}
+La première ligne sert à activer sur le routeur \emph{box} "l'IP forwarding".
+\\
+La seconde ligne permet de remplacer, lors de la traversée du routeur par un paquet sortant l'adresse IP source par l'adresse IP extérieur du routeur afin de fournir au destinataire une adresse publique pour la réponse.
+\\
+Ci-dessous, des captures des trames sur les sous-réseaux \emph{hub} et \emph{rezo} de deux ping de \emph{pc2} vers \emph{term}:
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\textwidth]{PingHub.png}
+\caption{Capture de trames lors d'un ping de \emph{pc2} vers \emph{term} sur \emph{hub}.}
+\vspace{1cm}
+\includegraphics[width=1\textwidth]{PingRezo.png}
+\caption{Capture de trames lors d'un ping de \emph{pc2} vers \emph{term} sur \emph{rezo}.}
+\end{figure}
+
+\section[Configuration statique de \emph{pc1}]{Attribution d'une IP statique à \emph{pc1}}
+L'objectif de cette partie du projet était d'attribuer une adresse IP fixe à \emph{pc1}. Pour ensuite pouvoir rediriger sur \emph{pc1} les connexions SSH entrantes sur le routeur \emph{box}.\\
+Les lignes suivantes ont été ajoutées au fichier dhcp.conf du routeur \emph{box}:
+\begin{verbatim}
+host pc1 {
+	hardware ethernet 6e:5f:98:37:0c:07;
+	fixed-address 10.176.63.2;
+}
+\end{verbatim}
+Ce bloc indique au serveur DHCP que toute demande venant de l'interface ayant l'adresse MAC indiquée devra se voir attribuer l'adresse IP 10.176.63.2.\\
+C'est pour cela que cette adresse n'appartient à la plage d'adresse attribuable par le serveur DHCP (voir \ref{lbl1} page \pageref{lbl1}).\\
+Cette ligne a été ajoutée au fichier box.startup:
+\begin{verbatim}
+iptables -t nat -A PREROUTING -p tcp -i eth0 -d 110.186.156.14 --dport 22
+         -j DNAT --to 10.176.63.2:22
+\end{verbatim}
+Celle-ci permet de rediriger tous les paquets TCP sur \emph{box} par l'interface \emph{eth0} vers le port 22 de \emph{pc1} (dont l'adresse IP viens d'être fixée).\\
+Ci-dessous, une capture des trames sur le sous-réseau \emph{hub} lors d'une connexion SSH de \emph{term} vers \emph{pc1}, en utilisant l'IP publique de \emph{box}.
+\begin{figure}[h!]
+\includegraphics[width=1\textwidth]{SSHHub.png}
+\caption{Capture de trames lors d'une connexion SSH de \emph{term} vers \emph{box} sur \emph{hub}.}
+\end{figure}
+\clearpage
+\section[Filtrage sur \emph{box} des connexions entrantes]{Configuration de \emph{box} via IPTABLES pour un filtrage des connexions entrantes.}
+Dans ce dernier point, il était demandé de détruire tout les paquets entrants sur \emph{box} à l'exception des connexions SSH depuis \emph{term}.\\
+Pour cela, nous avons ajouté les lignes suivantes à box.startup:
+\begin{verbatim}
+iptables --flush
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -A FORWARD -p tcp --syn -s ! 54.54.54.54 --dport ssh -j DROP
+iptables -P INPUT DROP
+iptables -A INPUT -i eth1 -j ACCEPT
+\end{verbatim}
+Les quatre premières lignes servent à réinitialiser les filtres d'IPTABLES.\\
+La cinquième ligne, rejette tout les paquets qui ne proviennent pas de \emph{term} et qui se sont redirigés par \emph{box}. L'option '--syn' autorise les paquets sortants.\\
+L'avant dernière ligne permet de détruire tout les paquets avec comme destination \emph{box}.\\
+La dernière ligne met une exception sur les paquets internes au sous-réseau \emph{hub}.
 \end{document} 
