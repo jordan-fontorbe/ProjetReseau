@@ -60,7 +60,7 @@
 \large{Proposé par : Sophie Robert}
 \vspace{3mm}
 \large{\\Réalisé par :}\\
-\large{Fontorbe Jordan, Guillaume Arthur}\\
+\large{Fontorbe Jordan, Guillaume Arthur (Groupe: CJ)}\\
 \end{center}
 \begin{figure}[b!]
 \begin{flushright}
@@ -182,7 +182,7 @@ iptables -P INPUT DROP
 iptables -A INPUT -i eth1 -j ACCEPT
 \end{verbatim}
 Les quatre premières lignes servent à réinitialiser les filtres d'IPTABLES.\\
-La cinquième ligne, rejette tout les paquets qui ne proviennent pas de \emph{term} et qui se sont redirigés par \emph{box}. L'option '--syn' autorise les paquets sortants.\\
+La cinquième ligne, rejette tout les paquets qui ne proviennent pas de \emph{term} et qui sont redirigés par \emph{box}. L'option '--syn' autorise les paquets sortants.\\
 L'avant dernière ligne permet de détruire tout les paquets avec comme destination \emph{box}.\\
-La dernière ligne met une exception sur les paquets internes au sous-réseau \emph{hub}.
+La dernière ligne met une exception sur les paquets internes au sous-réseau \emph{hub}. C'est à dire, les paquets entrants sur le routeur \emph{box} par l'interface \emph{eth1} (dans le réseau \emph{hub}) ne sont pas détruits.\\
 \end{document} 
