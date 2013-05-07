@@ -28,9 +28,9 @@
   {\parindent \z@ \raggedright \normalfont
     \interlinepenalty\@M
     \ifnum \c@secnumdepth >\m@ne
-        \Huge\bfseries \thechapter\quad
+        \Huge\bfseries {\color{black}\thechapter}\quad
     \fi
-    \Huge \bfseries #1\par\nobreak
+    \Huge \bfseries {\color{black}#1}\par\nobreak
     \vskip 40\p@
   }}
 
@@ -39,7 +39,7 @@
   {\parindent \z@ \raggedright
     \normalfont
     \interlinepenalty\@M
-    \Huge \bfseries  #1\par\nobreak
+    \Huge \bfseries #1\par\nobreak
     \vskip 40\p@
   }}
 \makeatother
@@ -81,7 +81,7 @@ Celui-ci se compose de plusieurs sous-réseaux:
 \item[rezo]Un sous-réseau extérieur à \emph{hub}. Celui-ci devait pouvoir communiquer avec \emph{hub}. Il n'était pas autorisé de modifier la configuration des machines de ce sous-réseau. Ce sous-réseau contient deux machines dont un serveur web.
 \end{description}
 \begin{center}
-\includegraphics[scale=0.5]{archi.png}
+\includegraphics[width=1\textwidth]{archi.png}
 \end{center}
 \chapter{Travail effectué}
 \section{Configuration du routeur}
